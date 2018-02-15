@@ -1,0 +1,13 @@
+#############################
+# Chess symbols in unicode  #
+#############################
+
+# given are the black symbols
+# for white symbols adjust font color
+
+KING    :   \u265A
+QUEEN   :   \u265B
+ROOK    :   \u265C
+BISHOP  :   \u265D
+KNIGHT  :   \u265E
+PAWN    :   \u265F
