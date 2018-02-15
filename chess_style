@@ -1,0 +1,15 @@
+#coding=utf-8
+
+#########################
+# Chess Style Sheet     #
+#########################
+
+# axis style
+# no grid and no ticks
+grid.linestyle      :   None
+xtick.major.size    :   0
+ytick.major.size    :   0
+
+# choose font, which displays unicode chess character correctly
+font.family         :   sans-serif
+font.sans-serif     :   Arial

@@ -10,7 +10,8 @@ import chess
 
 if __name__ == "__main__":
     plt = chess.plt
-    chess.draw_board()
+    b = chess.Board()
+    b.draw()
     plt.show()
     input('Press any button to continue... ')
     plt.close()
