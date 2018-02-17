@@ -9,6 +9,7 @@ mpl.use('Qt5Agg')
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import matplotlib.gridspec as gs
+import matplotlib.text as text
 
 plt.style.use('chess_style')
 
@@ -25,9 +26,23 @@ class Board:
     """
     TODO: add description of this class
     """
+
+    def __init__(self):
+        self.fig, self.axes = self.draw()
+        self.selected = None
+        self.wp1 = Piece(self.axes, '\u265f', 'white', (1, 2), True, None)
+        self.bp1 = Piece(self.axes, '\u265f', 'black', (7, 7), True, None)
+        self.axes[1].add_artist(self.wp1)
+        self.axes[1].add_artist(self.bp1)
+        self.fig.canvas.draw()
+
+        pick_id = self.fig.canvas.mpl_connect('pick_event', self.select)
+        set_id = self.fig.canvas.mpl_connect('button_press_event', self.set_piece)
+
+
     def draw(self):
         """draw chessboard with pyplot"""
-        plt.figure(figsize=(10, 8))
+        fig = plt.figure(figsize=(10, 8))
         grid = gs.GridSpec(1, 3, width_ratios=[1, 4, 1])
         left = plt.subplot(grid[0])
         center = plt.subplot(grid[1])
@@ -48,20 +63,38 @@ class Board:
             ax.set_yticklabels([])
 
         plt.tight_layout()
-        return [left, center, right]
+        return fig, [left, center, right]
+
+    def select(self, event):
+        if isinstance(event.artist, Piece):
+            self.selected = event.artist
+
+    def set_piece(self, event):
+        if self.selected is None:
+            return
+        if event.dblclick:
+            self.selected.set_position((round(event.xdata), round(event.ydata)))
+            self.fig.canvas.draw()
+            self.selected = None
 
 
-class Piece:
+class Piece(text.Text):
     """
+    Subclass of mpl.text.Text
     Base class for chess pieces
     """
     is_captured = False
     has_captured = []
     positions = []
 
-    def __init__(self, symbol, color, initial_pos, one_step, moves):
+    textprops = {'verticalalignment'    :   'center',
+                 'horizontalalignment'  :   'center',
+                 'fontsize'             :   50}
+
+    def __init__(self, axes, symbol, color, initial_pos, one_step, moves):
         """
         Params
+            board       :   Board instance which contains the Piece
             symbol      :   unicode character of the piece, string
             color       :   black or white, string
             initial_pos :   starting point, tuple (x, y)
@@ -69,14 +102,18 @@ class Piece:
             moves       :   list of tuples indicating the directions in which
                             the piece can move
         """
+        self.ax = axes[1]     # center
         self.sym = symbol
         self.color = color
         self.pos = initial_pos
         self.one_step = one_step
         self.moves = moves
+        super().__init__(*self.pos, self.sym, self.color, **self.textprops)
+        self.set_picker(True)
 
-    def __repr__(self):
-        """return string describing the piece"""
+    # def __repr__(self):
+    #     """return string describing the piece"""
+
 
 
 class King(Piece):
